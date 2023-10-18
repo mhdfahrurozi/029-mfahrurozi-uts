@@ -24,6 +24,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -83,7 +87,20 @@ fun GardenScreen(
     if (gardenPlants.isEmpty()) {
         EmptyGarden(onAddPlantClick, modifier)
     } else {
-        GardenList(gardenPlants = gardenPlants, onPlantClick = onPlantClick, modifier = modifier)
+        LazyRow(
+            modifier = modifier,
+            contentPadding = PaddingValues(
+                horizontal = dimensionResource(id = R.dimen.card_side_margin),
+                vertical = dimensionResource(id = R.dimen.margin_normal)
+            )
+        ) {
+            items(
+                items = gardenPlants,
+                key = { it.plant.plantId }
+            ) {
+                GardenListItem(plant = it, onPlantClick = onPlantClick)
+            }
+        }
     }
 }
 
@@ -96,8 +113,9 @@ private fun GardenList(
     // Call reportFullyDrawn when the garden list has been rendered
     val gridState = rememberLazyGridState()
     ReportDrawnWhen { gridState.layoutInfo.totalItemsCount > 0 }
+
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(3),
         modifier,
         state = gridState,
         contentPadding = PaddingValues(
@@ -127,6 +145,8 @@ private fun GardenListItem(
     // Dimensions
     val cardSideMargin = dimensionResource(id = R.dimen.card_side_margin)
     val marginNormal = dimensionResource(id = R.dimen.margin_normal)
+    val imageWidth = 200.dp // Adjust the desired image width
+    val imageHeight = 200.dp // Adjust the desired image height
 
     ElevatedCard(
         onClick = { onPlantClick(plant) },
@@ -143,7 +163,9 @@ private fun GardenListItem(
                 contentDescription = plant.plant.description,
                 Modifier
                     .fillMaxWidth()
-                    .height(dimensionResource(id = R.dimen.plant_item_image_height)),
+                    .height(imageHeight) // Set the desired image height
+                    .width(imageWidth) // Set the desired image width
+                    .padding(marginNormal),
                 contentScale = ContentScale.Crop,
             )
 
